@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <TextView
+        android:id="@+id/hiddenTextView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        />
+
+    <ImageView
+        android:id="@+id/mappa"
+        android:layout_width="328dp"
+        android:layout_height="328dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginRight="0dp"
+
+        android:src="@drawable/mappa"
+        tools:ignore="MissingConstraints"/>
+    <Button
+        android:id="@+id/inviodati"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mappa"
+        android:onClick="caricaGrafo"
+        android:background="@android:color/holo_green_dark"
+        android:text="Carica Grafo"
+        android:layout_centerHorizontal="true"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/inviodati">
+        <Button
+        android:id="@+id/startReadingBeaconsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:background="@android:color/holo_green_light"
+        android:enabled="true"
+        android:onClick="detectBeaconInMap"
+        android:text="Cerca la posizione attuale"
+        android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/stopReadingBeaconsButton"
+            android:onClick="stopDetectBeaconInMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:alpha="0.5"
+            android:background="@android:color/holo_red_light"
+            android:enabled="false"
+            android:text="Smetti di cercare la posizione"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+</RelativeLayout>
