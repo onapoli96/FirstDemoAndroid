@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Picture;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -17,7 +19,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -48,6 +52,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     private BeaconHelper beaconHelper;
+    private static final String ip = "172.19.22.38";
     private Graph<Nodo,String> grafo;
     private Button startReadingBeaconsButton;
     private Button stopReadingBeaconsButton;
@@ -58,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     private BitmapDrawable ambp;
     private TextView hiddenTextView;
     private InvioDati invio;
+    private Button[] bottoniPiano;
 
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final int REQUEST_ENABLE_BLUETOOTH = 1;
@@ -72,18 +78,25 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         beaconHelper = new BeaconHelper(this, hiddenTextView, 1);
         startReadingBeaconsButton = (Button) findViewById(R.id.startReadingBeaconsButton);
         stopReadingBeaconsButton = (Button) findViewById(R.id.stopReadingBeaconsButton);
-
         imageView = (ImageView) findViewById(R.id.mappa);
+        bottoniPiano = new Button[3];
+        bottoniPiano[0] = (Button) findViewById(R.id.piano1);
+        bottoniPiano[1] = (Button) findViewById(R.id.piano2);
+        bottoniPiano[2] = (Button) findViewById(R.id.piano3);
+        // Per settare dinamicamente un immagine
+        // imageView.setImageDrawable(getResources().getDrawable(R.drawable.pontedicoperta));
+
+
         ambp = (BitmapDrawable) imageView.getDrawable();
         bitmap = Bitmap.createBitmap(1000,1000, Bitmap.Config.RGB_565);
         bitmap = ambp.getBitmap();
 
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
             System.out.println("API grande");
-            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://192.168.1.174/DemoWebBeacon/caricaGrafo.php?piano=55");
+            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
         }
         else {
-            invio = (InvioDati) new InvioDati(this).execute("http://192.168.1.174/DemoWebBeacon/caricaGrafo.php?piano=55");
+            invio = (InvioDati) new InvioDati(this).execute("http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             askForLocationPermissions();
@@ -104,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
         }
-        //Controllo la risposta
         if(mBluetoothAdapter.isEnabled()){
             return true;
         }
@@ -159,11 +171,20 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         beaconHelper.clear();
     }
 
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void drawGraph(Graph<Nodo,String> graph){
-        operations = Bitmap.createBitmap(imageView.getWidth()*2,imageView.getHeight()*2, Bitmap.Config.RGB_565);
+
+        operations = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+
+
+        operations.setDensity(bitmap.getDensity());
+
 
         canvas = new Canvas(operations);
         canvas.drawBitmap(bitmap,0,0,null);
+        
         ArrayList<Nodo> nodi = graph.vertices();
         for (Nodo nod: nodi) {
             CustomView cv = new CustomView(this, nod);
@@ -175,12 +196,15 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
                 cve.draw(canvas);
             }
         }
-        imageView.setImageDrawable( new BitmapDrawable(getResources(),operations));
+        System.out.println("Sono quiii"+operations.getHeight()+"  " +bitmap.getHeight() + "  " +imageView.getHeight()+ "  " + imageView.getWidth());
+
+        imageView.setImageBitmap(operations);
 
     }
 
     public void drawMinPath(ArrayList<Nodo> toDraw){
-        operations = Bitmap.createBitmap(imageView.getWidth()*2,imageView.getHeight()*2, Bitmap.Config.RGB_565);
+
+        operations = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.RGB_565);
 
         canvas = new Canvas(operations);
         canvas.drawBitmap(bitmap,0,0,null);
@@ -239,7 +263,6 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     public void caricaGrafo(View v){
         grafo = invio.getGrafo();
         if(!grafo.vertices().isEmpty()) {
-
             drawGraph(grafo);
         }
         else{
@@ -262,6 +285,34 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
+
+    }
+
+    public void cambiaPiano(View v){
+        Button bottoneCliccato = (Button) v;
+        if(bottoneCliccato.getText().equals("Piano 1")){
+            imageView.setImageDrawable(getResources().getDrawable(R.drawable.pontedicoperta));
+            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
+            bottoniPiano[0].setEnabled(false);
+            bottoniPiano[1].setEnabled(true);
+            bottoniPiano[2].setEnabled(true);
+        }
+        if(bottoneCliccato.getText().equals("Piano 2")){
+            imageView.setImageDrawable(getResources().getDrawable(R.drawable.primopontedisovrastruttura));
+            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
+            bottoniPiano[0].setEnabled(true);
+            bottoniPiano[1].setEnabled(false);
+            bottoniPiano[2].setEnabled(true);
+        }
+        if(bottoneCliccato.getText().equals("Piano 3")) {
+            imageView.setImageDrawable(getResources().getDrawable(R.drawable.pontedicomando));
+            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
+            bottoniPiano[0].setEnabled(true);
+            bottoniPiano[1].setEnabled(true);
+            bottoniPiano[2].setEnabled(false);
+        }
+
+
 
     }
 

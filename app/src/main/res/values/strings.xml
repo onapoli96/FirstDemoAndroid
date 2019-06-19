@@ -16,4 +16,7 @@
     <string name="stop_looking_for_beacons">Ho smesso di cercare beacon</string>
     <string name="no_beacons_detected">Nessun beacon trovato</string>
     <string name="beacon_detected">Ho trovato il beacon con id %1$s !</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
