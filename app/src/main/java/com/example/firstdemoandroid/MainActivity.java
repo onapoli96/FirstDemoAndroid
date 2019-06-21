@@ -52,7 +52,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     private BeaconHelper beaconHelper;
-    private static final String ip = "172.19.22.38";
+    private static final String ip = "172.19.31.43";
     private Graph<Nodo,String> grafo;
     private Button startReadingBeaconsButton;
     private Button stopReadingBeaconsButton;
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         bottoniPiano[1] = (Button) findViewById(R.id.piano2);
         bottoniPiano[2] = (Button) findViewById(R.id.piano3);
         // Per settare dinamicamente un immagine
-        // imageView.setImageDrawable(getResources().getDrawable(R.drawable.pontedicoperta));
+        imageView.setImageDrawable(getResources().getDrawable(R.drawable.pontedicoperta));
 
 
         ambp = (BitmapDrawable) imageView.getDrawable();
@@ -176,15 +176,10 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void drawGraph(Graph<Nodo,String> graph){
 
-        operations = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-
-
-        operations.setDensity(bitmap.getDensity());
-
-
+        operations = Bitmap.createBitmap( (int)(bitmap.getWidth() * 2.6), (int)(bitmap.getHeight() *2.8), Bitmap.Config.ARGB_8888);
         canvas = new Canvas(operations);
         canvas.drawBitmap(bitmap,0,0,null);
-        
+
         ArrayList<Nodo> nodi = graph.vertices();
         for (Nodo nod: nodi) {
             CustomView cv = new CustomView(this, nod);
@@ -196,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
                 cve.draw(canvas);
             }
         }
-        System.out.println("Sono quiii"+operations.getHeight()+"  " +bitmap.getHeight() + "  " +imageView.getHeight()+ "  " + imageView.getWidth());
 
         imageView.setImageBitmap(operations);
 
@@ -204,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     public void drawMinPath(ArrayList<Nodo> toDraw){
 
-        operations = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.RGB_565);
+        operations = Bitmap.createBitmap( (int)(bitmap.getWidth() * 2.6), (int)(bitmap.getHeight() *2.8), Bitmap.Config.ARGB_8888);
 
         canvas = new Canvas(operations);
         canvas.drawBitmap(bitmap,0,0,null);
@@ -224,17 +218,17 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         imageView.setImageDrawable( new BitmapDrawable(getResources(),operations));
     }
 
-    public void newPath(String s) {
+    public void newPath(View v/*,String s*/) {
         grafo = invio.getGrafo();
         if(!grafo.vertices().isEmpty()) {
-            s = s.substring(s.length()-3);
-            System.out.println(s);
+            //s = s.substring(s.length()-3);
+           // System.out.println(s);
             ArrayList<Nodo> nodi = grafo.vertices();
             MinPathDijkstra<Nodo, String> dijkstra = new MinPathDijkstra<Nodo, String>();
 
             Nodo sorgente = new Nodo(0,0);
 
-            if(s.equals("149")){
+            /*if(s.equals("149")){
                 sorgente = nodi.get(2);
             }
             else if(s.equals("649")){
@@ -242,17 +236,21 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
             }
             else if(s.equals("947")){
                 sorgente = nodi.get(4);
-            }
+            }*/
+            sorgente= nodi.get(0);
+            Random random = new Random();
+            int indice = random.nextInt(nodi.size());
 
-            ArrayList<Nodo> result = dijkstra.minPath(grafo,sorgente, nodi.get(10));
+            System.out.println("Questo è tutto l'array dei nodi "+ nodi);
 
-            System.out.println(sorgente+"  " +nodi.get(6));
+            ArrayList<Nodo> result = dijkstra.minPath(grafo,sorgente, nodi.get(5));
+
             if (result != null) {
-                //Toast.makeText(this, "Cammino trovato!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Cammino trovato!!", Toast.LENGTH_SHORT).show();
                 drawMinPath(result);
 
             } else {
-                //Toast.makeText(this, "Cammino non trovato!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Cammino non trovato!!", Toast.LENGTH_SHORT).show();
             }
         }
         else{
@@ -260,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void caricaGrafo(View v){
         grafo = invio.getGrafo();
         if(!grafo.vertices().isEmpty()) {
@@ -280,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
         inviaMessaggio("L'utente TEST USER è passato dal beacon con id: "+ hiddenTextView.getText()+" al tempo "+ dateFormat.format(date) );
-        newPath(hiddenTextView.getText().toString());
+        //newPath(hiddenTextView.getText().toString());
     }
 
     @Override
@@ -290,27 +289,36 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     public void cambiaPiano(View v){
         Button bottoneCliccato = (Button) v;
+
         if(bottoneCliccato.getText().equals("Piano 1")){
+
             imageView.setImageDrawable(getResources().getDrawable(R.drawable.pontedicoperta));
             invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
+
             bottoniPiano[0].setEnabled(false);
             bottoniPiano[1].setEnabled(true);
             bottoniPiano[2].setEnabled(true);
         }
         if(bottoneCliccato.getText().equals("Piano 2")){
-            imageView.setImageDrawable(getResources().getDrawable(R.drawable.primopontedisovrastruttura));
-            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
+
+            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=2");
             bottoniPiano[0].setEnabled(true);
+
+            imageView.setImageDrawable(getResources().getDrawable(R.drawable.primopontedisovrastruttura));
             bottoniPiano[1].setEnabled(false);
             bottoniPiano[2].setEnabled(true);
         }
         if(bottoneCliccato.getText().equals("Piano 3")) {
             imageView.setImageDrawable(getResources().getDrawable(R.drawable.pontedicomando));
-            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
+            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=3");
+
             bottoniPiano[0].setEnabled(true);
             bottoniPiano[1].setEnabled(true);
             bottoniPiano[2].setEnabled(false);
         }
+        ambp = (BitmapDrawable) imageView.getDrawable();
+        bitmap = Bitmap.createBitmap(1000,1000, Bitmap.Config.RGB_565);
+        bitmap = ambp.getBitmap();
 
 
 

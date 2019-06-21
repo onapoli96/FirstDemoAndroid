@@ -57,18 +57,20 @@ public class HeapPriorityQueue<V> implements PriorityQueue<V> {
 	}
 	
 	private void moveDown(int i){
-		if(i > lastIndex) throw new IllegalArgumentException();
-			ElemConPrior<V> el = heap[i];
-			int j;
-			while((j=(2*i)+1)<lastIndex){
-				if(j+1<lastIndex && heap[j+1].priority<heap[j].priority) 
-					j++;
-				if(el.priority<=heap[j].priority) break;
-				heap[i]=heap[j];
-				i=j;
-			}
-			heap[i]=el;
-			position.put(heap[i].element, i);
+		if(i > lastIndex)
+			throw new IllegalArgumentException();
+
+		ElemConPrior<V> el = heap[i];
+		int j;
+		while((j=(2*i)+1)<lastIndex){
+			if(j+1<lastIndex && heap[j+1].priority<heap[j].priority)
+				j++;
+			if(el.priority<=heap[j].priority) break;
+			heap[i]=heap[j];
+			i=j;
+		}
+		heap[i]=el;
+		position.put(heap[i].element, i);
 	}
 	
 	@Override

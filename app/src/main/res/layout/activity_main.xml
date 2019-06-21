@@ -12,30 +12,30 @@
         />
 
 
-
-
     <ImageView
         android:id="@+id/mappa"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="0dp"
         android:layout_marginRight="0dp"
 
         android:src="@drawable/pontedicoperta"
-        tools:ignore="MissingConstraints"/>
+        android:visibility="visible"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/inviodati"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/mappa"
+        android:layout_centerHorizontal="true"
+        android:background="#006999"
+        android:textColor="@android:color/white"
+        android:textSize="20dp"
         android:onClick="caricaGrafo"
-        android:background="@android:color/holo_green_dark"
-        android:text="Carica Grafo"
-        android:layout_centerHorizontal="true"/>
+        android:text="Carica Grafo" />
+
     <LinearLayout
         android:id="@+id/linearBottoni"
         android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
             android:layout_weight="1"
             android:background="@android:color/holo_green_light"
             android:enabled="true"
-            android:onClick="detectBeaconInMap"
+            android:onClick="newPath"
             android:text="Cerca la posizione attuale"
             android:textColor="@android:color/white"
             />
@@ -83,9 +83,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
+            android:alpha="0.5"
             android:background="@android:color/darker_gray"
-            android:enabled="true"
-
+            android:enabled="false"
             android:onClick="cambiaPiano"
             android:text="Piano 1"
             android:textColor="@android:color/white"

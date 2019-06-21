@@ -7,6 +7,7 @@ import com.example.firstdemoandroid.giorgio.graph.stuffs.SparseGraph;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 
 /**
  * Dijkstra Algorithm
@@ -30,34 +31,33 @@ public class MinPathDijkstra<V,E> {
 	 * @return sequence of nodes that form the min path from s to d
 	 */
 	public ArrayList<V> minPath(Graph<V,E> g, V s, V d){
-		
-		q = new HeapPriorityQueue<V>(g.vertices().size());
-		dist = new HashMap<String,Double>();
-		fathers = new HashMap<String, V>();
-		ArrayList<V> minPath = new ArrayList<V>();
-		
+
 		ArrayList<V> vertex = g.vertices();
+
+		q = new HeapPriorityQueue<>(g.vertices().size());
+		dist = new HashMap<>();
+		fathers = new HashMap<>();
+		ArrayList<V> minPath = new ArrayList<>();
+		
+
 		for(V x:vertex){
 			dist.put(x.toString(),Double.POSITIVE_INFINITY);
 			fathers.put(x.toString(),null);
 		}
 		fathers.put(s.toString(), s);
 		dist.put(s.toString(), 0.0);
-		for(V x:vertex){
+		/*for(V x:vertex){
 			q.insert(x, dist.get(x.toString()));
 		}
 
+		q.printHeap();
+		int i = 0;
 		while(!q.isEmpty()){
 			V u = q.extractfirst();
 			for(V v:g.neighbors(u)){
 
-				System.out.println("Questi sono i vicini di "+ u+ ": "+g.neighbors(u));
 				double weight = g.getWeight(u, v);
 				double distanceThrought = dist.get(u.toString())+weight;
-
-				System.out.println("E se fosse null: "+v +"Si sono io"+v+"  "+dist.get(v));
-				System.out.println(dist.containsKey(v));
-
 
 				if(distanceThrought<dist.get(v.toString())){
 					dist.put(v.toString(), distanceThrought);
@@ -67,13 +67,55 @@ public class MinPathDijkstra<V,E> {
 
 				}
 			}
+			i++;
+			System.out.println("iterazione numero "+i);
+			q.printHeap();
+		}*/
+		//implementazione mia
+		for(V x:vertex){
+			q.insert(x, dist.get(x.toString()));
+
 		}
-		System.out.println(dist);
+
+		int i = 0;
+		ArrayList<String> nodiVisitati = new ArrayList<>();
+
+		while(nodiVisitati.size()<vertex.size()){
+			V u = q.extractfirst();
+			nodiVisitati.add(u.toString());
+			for(V v:g.neighbors(u)){
+
+					double weight = g.getWeight(u, v);
+					double distanceThrought = dist.get(u.toString()) + weight;
+
+					if (distanceThrought < dist.get(v.toString())) {
+						dist.put(v.toString(), distanceThrought);
+						q.decreasePriority(v, dist.get(v.toString()));
+						System.out.println("Qui ci arrivo");
+						fathers.put(v.toString(), u);
+
+					}
+
+			}
+			i++;
+			System.out.println("iterazione numero "+i);
+
+		}
+
+		//fine implementazione mia
+
+
+
+
+		System.out.println("Queste sono tutte le distanza alla fine del for"+dist);
 		V step;
 		step = d;
 		System.out.println("Questo è l'has dei padriS"+fathers);
-		if(fathers.get(d.toString())==null)
+		if(fathers.get(d.toString())==null){
+			System.out.println("IO rompo tutto  "+"   " +d.toString() +"    "+fathers.containsKey(d.toString()));
+			System.out.println("Questi son i vicini del colpevole"+ g.neighbors(d));
 			return null;
+		}
 		minPath.add(step);
 		while(fathers.get(step.toString())!=null){
 			if(step.toString().equals(s.toString())) break;
@@ -81,8 +123,9 @@ public class MinPathDijkstra<V,E> {
 			minPath.add(step);
 			System.out.println(step);
 		}
-		System.out.println(minPath);
+
 		Collections.reverse(minPath);
+		System.out.println("Questo è il min path: " +minPath);
 		return minPath;
 	}
 
