@@ -1,8 +1,16 @@
-package com.example.firstdemoandroid.giorgio.graph.stuffs;
+package com.example.firstdemoandroid.giorgio.Helper;
+
+
+import java.util.Objects;
 
 public class Nodo {
     private int x;
     private int y;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
 
     public Nodo(int x, int y){
         this.x = x;
@@ -20,14 +28,21 @@ public class Nodo {
             return true;
         }
         if (obj == null) {
+            System.out.println("Per qualche motivo vado qui ");
             return false;
         }
         if (getClass() != obj.getClass()) {
+            System.out.println("Anzi qui ");
             return false;
         }
         Nodo other = (Nodo) obj;
-
-        return x == other.x && y == other.y;
+        if(this.x== other.getX() && this.y == other.getY()){
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 

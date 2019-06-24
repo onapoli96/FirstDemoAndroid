@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Picture;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -19,9 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -33,27 +29,35 @@ import com.example.firstdemoandroid.giorgio.Helper.BeaconHelper;
 import com.example.firstdemoandroid.giorgio.Helper.MqttHelper;
 import com.example.firstdemoandroid.giorgio.customs.CustomView;
 import com.example.firstdemoandroid.giorgio.customs.CustomViewEdge;
-import com.example.firstdemoandroid.giorgio.graph.algorithms.search.MinPathDijkstra;
-import com.example.firstdemoandroid.giorgio.graph.stuffs.Edge;
-import com.example.firstdemoandroid.giorgio.graph.stuffs.Graph;
-import com.example.firstdemoandroid.giorgio.graph.stuffs.Nodo;
+import com.example.firstdemoandroid.giorgio.Helper.Edge;
+import com.example.firstdemoandroid.giorgio.Helper.Nodo;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+
+import org.jgrapht.*;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.*;
+
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     private BeaconHelper beaconHelper;
-    private static final String ip = "172.19.31.43";
-    private Graph<Nodo,String> grafo;
+    private static final String ip = "172.19.29.76";
+    private Graph<Nodo,DefaultEdge> grafo;
     private Button startReadingBeaconsButton;
     private Button stopReadingBeaconsButton;
     private Canvas canvas;
@@ -65,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     private InvioDati invio;
     private Button[] bottoniPiano;
 
+
+
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final int REQUEST_ENABLE_BLUETOOTH = 1;
     MqttHelper mqttHelper;
@@ -73,6 +79,11 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Nodo n1 = new Nodo(20,20);
+        Nodo n2 = new Nodo(20,20);
+
+        ArrayList<Nodo> nodi = new ArrayList<>();
+
         hiddenTextView = (TextView) findViewById(R.id.hiddenTextView);
         hiddenTextView.addTextChangedListener(this);
         beaconHelper = new BeaconHelper(this, hiddenTextView, 1);
@@ -91,18 +102,17 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         bitmap = Bitmap.createBitmap(1000,1000, Bitmap.Config.RGB_565);
         bitmap = ambp.getBitmap();
 
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+
             System.out.println("API grande");
             invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
-        }
-        else {
-            invio = (InvioDati) new InvioDati(this).execute("http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
-        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             askForLocationPermissions();
             askForBluetooth();
         }
         startMqtt();
+
+
 
     }
 
@@ -174,24 +184,24 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void drawGraph(Graph<Nodo,String> graph){
+    public void drawGraph(Graph<Nodo,DefaultEdge> graph){
 
         operations = Bitmap.createBitmap( (int)(bitmap.getWidth() * 2.6), (int)(bitmap.getHeight() *2.8), Bitmap.Config.ARGB_8888);
         canvas = new Canvas(operations);
         canvas.drawBitmap(bitmap,0,0,null);
 
-        ArrayList<Nodo> nodi = graph.vertices();
-        for (Nodo nod: nodi) {
+
+        for (Nodo nod: graph.vertexSet()) {
             CustomView cv = new CustomView(this, nod);
             cv.draw(canvas);
-            ArrayList<Edge<Nodo,String>> archi = graph.getAllEdges();
-            for (Edge e : archi){
-
-                CustomViewEdge cve = new CustomViewEdge(this, (Nodo) e.getIn(), (Nodo) e.getOut());
+            graph.edgesOf(nod);
+            for (DefaultEdge e : graph.outgoingEdgesOf(nod)){
+                Nodo n2 = graph.getEdgeTarget(e);
+                CustomViewEdge cve = new CustomViewEdge(this, nod , n2);
                 cve.draw(canvas);
             }
         }
-
+        //grafo.get
         imageView.setImageBitmap(operations);
 
     }
@@ -219,14 +229,14 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     }
 
     public void newPath(View v/*,String s*/) {
-        grafo = invio.getGrafo();
-        if(!grafo.vertices().isEmpty()) {
+        /*grafo = invio.getGrafo();
+        if(!grafo.edgeSet().isEmpty()) {
             //s = s.substring(s.length()-3);
            // System.out.println(s);
             ArrayList<Nodo> nodi = grafo.vertices();
             MinPathDijkstra<Nodo, String> dijkstra = new MinPathDijkstra<Nodo, String>();
 
-            Nodo sorgente = new Nodo(0,0);
+            Nodo sorgente = new Nodo(0,0);*/
 
             /*if(s.equals("149")){
                 sorgente = nodi.get(2);
@@ -237,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
             else if(s.equals("947")){
                 sorgente = nodi.get(4);
             }*/
-            sorgente= nodi.get(0);
+           /* sorgente= nodi.get(0);
             Random random = new Random();
             int indice = random.nextInt(nodi.size());
 
@@ -255,18 +265,44 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         }
         else{
             Toast.makeText(this, "Carica prima il grafo!", Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void caricaGrafo(View v){
         grafo = invio.getGrafo();
-        if(!grafo.vertices().isEmpty()) {
+        if(!grafo.vertexSet().isEmpty()) {
             drawGraph(grafo);
         }
         else{
             Toast.makeText(this, "Nessun grafo è stato caricato", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void generaPercorsoMinimoCasuale(View v){
+        operations = Bitmap.createBitmap( (int)(bitmap.getWidth() * 2.6), (int)(bitmap.getHeight() *2.8), Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(operations);
+        canvas.drawBitmap(bitmap,0,0,null);
+
+        ArrayList<Nodo> allVertex = invio.getAllNodes();
+        Random random = new Random();
+        int indice = random.nextInt(allVertex.size());
+
+
+        DijkstraShortestPath<Nodo, DefaultEdge> dijkstraAlg = new DijkstraShortestPath<>(grafo);
+        ShortestPathAlgorithm.SingleSourcePaths<Nodo, DefaultEdge> iPaths = dijkstraAlg.getPaths(allVertex.get(0));
+
+        List<Nodo> path = iPaths.getPath(allVertex.get(indice)).getVertexList();
+
+        for(int i=0; i<path.size()-1;i++){
+            CustomView cv = new CustomView(this, path.get(i+1));
+            CustomViewEdge cve = new CustomViewEdge(this,path.get(i),path.get(i+1));
+
+            cve.draw(canvas);
+            cv.draw(canvas);
+        }
+        imageView.setImageBitmap(operations);
+
     }
 
     @Override
@@ -380,3 +416,4 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         });
     }
 }
+

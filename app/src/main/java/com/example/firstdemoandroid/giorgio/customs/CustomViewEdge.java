@@ -6,7 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
-import com.example.firstdemoandroid.giorgio.graph.stuffs.Nodo;
+import com.example.firstdemoandroid.giorgio.Helper.Nodo;
 
 public class CustomViewEdge extends View {
 

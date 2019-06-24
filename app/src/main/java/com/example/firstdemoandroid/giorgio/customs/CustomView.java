@@ -6,7 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
-import com.example.firstdemoandroid.giorgio.graph.stuffs.Nodo;
+import com.example.firstdemoandroid.giorgio.Helper.Nodo;
 
 public class CustomView extends View {
 
@@ -27,6 +27,10 @@ public class CustomView extends View {
     protected void onDraw(Canvas canvas) {
         canvas.drawCircle(nodo.getX(), nodo.getY(), 20, esterno);
         canvas.drawCircle(nodo.getX(), nodo.getY(), 15, interno);
+        Paint paint = new Paint();
+        paint.setTextSize(30);
+        canvas.drawText("X: "+nodo.getX()+"Y: "+ nodo.getY(), nodo.getX(),nodo.getY()-30, paint);
+
     }
 
     public Nodo getNodo() {
