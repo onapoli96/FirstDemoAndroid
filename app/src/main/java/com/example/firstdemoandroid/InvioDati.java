@@ -68,10 +68,18 @@ public class InvioDati extends AsyncTask<String,Void,String> {
             for(int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
 
+                 /*
+                TELEFONO DI ORLANDO
                 int x1 = (int)(Integer.parseInt(object.get("X1").toString()) * 2.8);
                 int y1 = (int)(Integer.parseInt(object.get("Y1").toString()) * 2.8);
                 int x2 = (int)(Integer.parseInt(object.get("X2").toString()) * 2.8);
                 int y2 = (int)(Integer.parseInt(object.get("Y2").toString()) * 2.8);
+                */
+
+                int x1 = (int)(Integer.parseInt(object.get("X1").toString()) * 3.5);
+                int y1 = (int)(Integer.parseInt(object.get("Y1").toString()) * 3.5);
+                int x2 = (int)(Integer.parseInt(object.get("X2").toString()) * 3.5);
+                int y2 = (int)(Integer.parseInt(object.get("Y2").toString()) * 3.5);
 
                 Nodo n1 = new Nodo(x1, y1);
                 Nodo n2 = new Nodo(x2, y2);

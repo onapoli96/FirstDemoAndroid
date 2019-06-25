@@ -48,6 +48,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -56,7 +57,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     private BeaconHelper beaconHelper;
-    private static final String ip = "172.19.29.76";
+    private static final String ip = "172.19.24.55";
     private Graph<Nodo,DefaultEdge> grafo;
     private Button startReadingBeaconsButton;
     private Button stopReadingBeaconsButton;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     private TextView hiddenTextView;
     private InvioDati invio;
     private Button[] bottoniPiano;
+    private CaricaHashmapBeacon caricaHashmap;
 
 
 
@@ -102,10 +104,16 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         bitmap = Bitmap.createBitmap(1000,1000, Bitmap.Config.RGB_565);
         bitmap = ambp.getBitmap();
 
-
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
             System.out.println("API grande");
             invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
+            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaHashmap.php?piano=1");
 
+        }
+        else {
+            invio = (InvioDati) new InvioDati(this).execute("http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
+            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this).execute("http://"+ip+"/DemoWebBeacon/caricaHashmap.php?piano=1");
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             askForLocationPermissions();
             askForBluetooth();
@@ -228,32 +236,22 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         imageView.setImageDrawable( new BitmapDrawable(getResources(),operations));
     }
 
-    public void newPath(View v/*,String s*/) {
-        /*grafo = invio.getGrafo();
-        if(!grafo.edgeSet().isEmpty()) {
-            //s = s.substring(s.length()-3);
-           // System.out.println(s);
-            ArrayList<Nodo> nodi = grafo.vertices();
-            MinPathDijkstra<Nodo, String> dijkstra = new MinPathDijkstra<Nodo, String>();
+    public void newPath(String s) {
+        grafo = invio.getGrafo();
+        ArrayList<Nodo> allVertex = invio.getAllNodes();
+        if(allVertex.size() != 0) {
+            s = s.substring(s.length()-3);
+            System.out.println(s);
+            DijkstraShortestPath<Nodo, DefaultEdge> dijkstraAlg = new DijkstraShortestPath<>(grafo);
+            HashMap<String,Nodo> hashMap = caricaHashmap.getHashMap();
+            Nodo sorgente = hashMap.get(s);
+            ShortestPathAlgorithm.SingleSourcePaths<Nodo, DefaultEdge> iPaths = dijkstraAlg.getPaths(sorgente);
 
-            Nodo sorgente = new Nodo(0,0);*/
-
-            /*if(s.equals("149")){
-                sorgente = nodi.get(2);
-            }
-            else if(s.equals("649")){
-                sorgente = nodi.get(3);
-            }
-            else if(s.equals("947")){
-                sorgente = nodi.get(4);
-            }*/
-           /* sorgente= nodi.get(0);
             Random random = new Random();
-            int indice = random.nextInt(nodi.size());
+            int indice = random.nextInt(allVertex.size());
 
-            System.out.println("Questo è tutto l'array dei nodi "+ nodi);
-
-            ArrayList<Nodo> result = dijkstra.minPath(grafo,sorgente, nodi.get(5));
+            List<Nodo> path = iPaths.getPath(allVertex.get(indice)).getVertexList();
+            ArrayList<Nodo> result = new ArrayList<>(path);
 
             if (result != null) {
                 Toast.makeText(this, "Cammino trovato!!", Toast.LENGTH_SHORT).show();
@@ -265,8 +263,9 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         }
         else{
             Toast.makeText(this, "Carica prima il grafo!", Toast.LENGTH_SHORT).show();
-        }*/
+        }
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void caricaGrafo(View v){
@@ -315,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
         inviaMessaggio("L'utente TEST USER è passato dal beacon con id: "+ hiddenTextView.getText()+" al tempo "+ dateFormat.format(date) );
-        //newPath(hiddenTextView.getText().toString());
+        newPath(hiddenTextView.getText().toString());
     }
 
     @Override
@@ -330,6 +329,8 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
 
             imageView.setImageDrawable(getResources().getDrawable(R.drawable.pontedicoperta));
             invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
+            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaHashmap.php?piano=1");
+
 
             bottoniPiano[0].setEnabled(false);
             bottoniPiano[1].setEnabled(true);
@@ -338,6 +339,9 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         if(bottoneCliccato.getText().equals("Piano 2")){
 
             invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=2");
+            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaHashmap.php?piano=2");
+
+
             bottoniPiano[0].setEnabled(true);
 
             imageView.setImageDrawable(getResources().getDrawable(R.drawable.primopontedisovrastruttura));
@@ -347,6 +351,8 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         if(bottoneCliccato.getText().equals("Piano 3")) {
             imageView.setImageDrawable(getResources().getDrawable(R.drawable.pontedicomando));
             invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=3");
+            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaHashmap.php?piano=3");
+
 
             bottoniPiano[0].setEnabled(true);
             bottoniPiano[1].setEnabled(true);
@@ -355,9 +361,6 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         ambp = (BitmapDrawable) imageView.getDrawable();
         bitmap = Bitmap.createBitmap(1000,1000, Bitmap.Config.RGB_565);
         bitmap = ambp.getBitmap();
-
-
-
     }
 
 

@@ -50,7 +50,7 @@
             android:layout_weight="1"
             android:background="@android:color/holo_green_light"
             android:enabled="true"
-            android:onClick="generaPercorsoMinimoCasuale"
+            android:onClick="detectBeaconInMap"
             android:text="Cerca la posizione attuale"
             android:textColor="@android:color/white"
             />
