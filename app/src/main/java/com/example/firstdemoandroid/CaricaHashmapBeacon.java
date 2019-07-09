@@ -58,11 +58,11 @@ public class CaricaHashmapBeacon extends AsyncTask<String,Void,String> {
             for(int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
 
-                int x = (int)(Integer.parseInt(object.get("X").toString()) * 3.5);
-                int y = (int)(Integer.parseInt(object.get("Y").toString()) * 3.5);
+                //int x = (int)(Integer.parseInt(object.get("X").toString()) * 3.5);
+                //int y = (int)(Integer.parseInt(object.get("Y").toString()) * 3.5);
 
-                //int x = (int)(Integer.parseInt(object.get("X").toString()) * 2.8);
-                //int y = (int)(Integer.parseInt(object.get("Y").toString()) * 2.8);
+                int x = (int)(Integer.parseInt(object.get("X").toString()) * 2.8);
+                int y = (int)(Integer.parseInt(object.get("Y").toString()) * 2.8);
 
                 String idBeacon = object.get("IDBeacon").toString();
                 System.out.println(idBeacon);

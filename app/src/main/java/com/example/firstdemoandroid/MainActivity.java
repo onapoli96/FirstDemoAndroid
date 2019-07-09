@@ -61,7 +61,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     private BeaconHelper beaconHelper;
-    private static final String ip = "172.19.30.217";
+    private static final String ip = "172.19.22.109";
     private Graph<Nodo,DefaultEdge> grafo;
     private Button cercaPercorsoButton;
     private Button stopReadingBeaconsButton;
