@@ -62,7 +62,7 @@ public class BeaconHelper implements BeaconConsumer, RangeNotifier {
         try {
             mBeaconManager.startRangingBeaconsInRegion(mRegion);
 
-            showToastMessage("Cercando beacon..");
+            //showToastMessage("Cercando beacon..");
 
         } catch (RemoteException e) {
             Log.d("TAG", "Exception" + e.getMessage());
@@ -94,7 +94,7 @@ public class BeaconHelper implements BeaconConsumer, RangeNotifier {
         String tutti = " ";
         int i = 0;
         if (beacons.size() == 0) {
-            showToastMessage(context.getString(R.string.no_beacons_detected));
+            //showToastMessage(context.getString(R.string.no_beacons_detected));
         }
         if(numActivity == 0) {
             for (Beacon beacon : beacons) {
@@ -136,7 +136,7 @@ public class BeaconHelper implements BeaconConsumer, RangeNotifier {
 
         try {
             mBeaconManager.stopMonitoringBeaconsInRegion(mRegion);
-            showToastMessage(context.getString(R.string.stop_looking_for_beacons));
+            //showToastMessage(context.getString(R.string.stop_looking_for_beacons));
         } catch (RemoteException e) {
             Log.d("Errore", "Errore: " + e.getMessage());
         }

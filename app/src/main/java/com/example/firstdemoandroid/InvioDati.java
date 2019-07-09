@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.view.View;
+import android.widget.EditText;
 
 import com.example.firstdemoandroid.giorgio.Helper.Edge;
 import com.example.firstdemoandroid.giorgio.Helper.Nodo;
@@ -70,11 +72,12 @@ public class InvioDati extends AsyncTask<String,Void,String> {
 
                  /*
                 TELEFONO DI ORLANDO
+
                 int x1 = (int)(Integer.parseInt(object.get("X1").toString()) * 2.8);
                 int y1 = (int)(Integer.parseInt(object.get("Y1").toString()) * 2.8);
                 int x2 = (int)(Integer.parseInt(object.get("X2").toString()) * 2.8);
                 int y2 = (int)(Integer.parseInt(object.get("Y2").toString()) * 2.8);
-                */
+*/
 
                 int x1 = (int)(Integer.parseInt(object.get("X1").toString()) * 3.5);
                 int y1 = (int)(Integer.parseInt(object.get("Y1").toString()) * 3.5);
@@ -134,15 +137,13 @@ public class InvioDati extends AsyncTask<String,Void,String> {
             if(grafo.containsVertex(e.getIn()) && grafo.containsVertex(e.getOut())) {
                 grafo.addEdge(e.getIn(), e.getOut());
                 grafo.addEdge(e.getOut(), e.getIn());
-                System.out.println("Nell'edge set" + grafo.edgeSet());
             }
         }
 
-        System.out.println("Questi sono i vertici  "+grafo.vertexSet()+"  " +grafo.vertexSet().size());
-        System.out.println("Questi sono gli archi  "+grafo.edgeSet()+"  " +grafo.edgeSet().size());
 
         return grafo;
     }
+
 
     public ArrayList<Nodo> getAllNodes(){
         return nodi;

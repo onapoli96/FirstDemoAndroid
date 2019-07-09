@@ -60,6 +60,10 @@ public class CaricaHashmapBeacon extends AsyncTask<String,Void,String> {
 
                 int x = (int)(Integer.parseInt(object.get("X").toString()) * 3.5);
                 int y = (int)(Integer.parseInt(object.get("Y").toString()) * 3.5);
+
+                //int x = (int)(Integer.parseInt(object.get("X").toString()) * 2.8);
+                //int y = (int)(Integer.parseInt(object.get("Y").toString()) * 2.8);
+
                 String idBeacon = object.get("IDBeacon").toString();
                 System.out.println(idBeacon);
                 Nodo n = new Nodo(x, y);

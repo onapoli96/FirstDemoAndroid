@@ -12,66 +12,106 @@
         />
 
 
-    <ImageView
+    <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/mappa"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="0dp"
         android:layout_marginRight="0dp"
-
-        android:src="@drawable/pontedicoperta"
         android:visibility="visible"
         tools:ignore="MissingConstraints" />
+
+    <LinearLayout
+        android:id="@+id/editRicercaLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mappa"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="X: " />
+
+        <EditText
+            android:id="@+id/inputX"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Y: " />
+
+        <EditText
+            android:id="@+id/inputY"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+        <TextView
+            android:id="@+id/destinazioneAttuale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="..." />
+    </LinearLayout>
 
     <Button
         android:id="@+id/inviodati"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/mappa"
+        android:layout_below="@+id/editRicercaLayout"
         android:layout_centerHorizontal="true"
         android:background="#006999"
         android:textColor="@android:color/white"
         android:textSize="20dp"
-        android:onClick="caricaGrafo"
-        android:text="Carica Grafo" />
+        android:onClick="cambiaDestinazione"
+        android:text="Inserisci destinazione" />
 
     <LinearLayout
         android:id="@+id/linearBottoni"
+        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/inviodati">
 
         <Button
-            android:id="@+id/startReadingBeaconsButton"
+            android:id="@+id/cercaPercorsoButton"
             android:layout_width="wrap_content"
+            android:padding="5dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:background="@android:color/holo_green_light"
-            android:enabled="true"
+            android:enabled="false"
             android:onClick="detectBeaconInMap"
-            android:text="Cerca la posizione attuale"
+            android:text="Cerca percorso"
             android:textColor="@android:color/white"
             />
 
         <Button
             android:id="@+id/stopReadingBeaconsButton"
-            android:onClick="stopDetectBeaconInMap"
+            android:onClick="caricaGrafo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:alpha="0.5"
             android:background="@android:color/holo_red_light"
-            android:enabled="false"
-            android:text="Smetti di cercare la posizione"
+            android:enabled="true"
+            android:text="Carica tutti i percorsi"
             android:textColor="@android:color/white"
             />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/bottoniPiano"
         android:layout_below="@+id/linearBottoni"
         android:layout_width="wrap_content"
         android:orientation="horizontal"
@@ -83,6 +123,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
+
             android:alpha="0.5"
             android:background="@android:color/darker_gray"
             android:enabled="false"
@@ -119,5 +160,6 @@
             />
 
     </LinearLayout>
+
 
 </RelativeLayout>
