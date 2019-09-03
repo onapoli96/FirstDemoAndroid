@@ -54,8 +54,8 @@ public class MqttHelper {
         connect();
     }
 
-    public void publica(MqttMessage mqttMessage) throws MqttException {
-        mqttAndroidClient.publish("test/cell",mqttMessage);
+    public void publica(String topic, MqttMessage mqttMessage) throws MqttException {
+        mqttAndroidClient.publish(topic,mqttMessage);
     }
 
     public void setCallback(MqttCallbackExtended callback) {

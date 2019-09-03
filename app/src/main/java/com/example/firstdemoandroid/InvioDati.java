@@ -96,14 +96,9 @@ public class InvioDati extends AsyncTask<String,Void,String> {
                 if(!nodi.contains(n1)) {
                     nodi.add(n1);
                 }
-
                 if(!nodi.contains(n2)) {
                     nodi.add(n2);
                 }
-
-
-
-
             }
 
 

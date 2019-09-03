@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -61,7 +62,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     private BeaconHelper beaconHelper;
-    private static final String ip = "172.19.22.109";
+    private static final String ip = "172.19.18.219";
     private Graph<Nodo,DefaultEdge> grafo;
     private Button cercaPercorsoButton;
     private Button stopReadingBeaconsButton;
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
 
         // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
         mAttacher = new PhotoViewAttacher(imageView);
+
 
 
         ambp = (BitmapDrawable) imageView.getDrawable();
@@ -304,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
-        inviaMessaggio("L'utente TEST USER è passato dal beacon con id: "+ hiddenTextView.getText()+" al tempo "+ dateFormat.format(date) );
+        inviaMessaggio("pos","L'utente TEST USER è passato dal beacon con id: "+ hiddenTextView.getText()+" al tempo "+ dateFormat.format(date) );
         newPath(hiddenTextView.getText().toString());
     }
 
@@ -318,20 +320,17 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
 
         if(bottoneCliccato.getText().equals("Piano 1")){
 
-            imageView.setImageResource(R.drawable.pontedicoperta);;
+            imageView.setImageResource(R.drawable.pontedicoperta);
             mAttacher.update();
             invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
             caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaHashmap.php?piano=1");
             beaconHelper.stopDetectingBeacons();
-
-
 
             bottoniPiano[0].setEnabled(false);
             bottoniPiano[1].setEnabled(true);
             bottoniPiano[2].setEnabled(true);
         }
         if(bottoneCliccato.getText().equals("Piano 2")){
-
             imageView.setImageResource(R.drawable.primopontedisovrastruttura);;
             mAttacher.update();
             invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=2");
@@ -394,10 +393,10 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
 
 
 
-    private void inviaMessaggio(String messaggio){
+    private void inviaMessaggio(String topic, String messaggio){
         MqttMessage message = new MqttMessage(messaggio.getBytes());
         try {
-            mqttHelper.publica(message);
+            mqttHelper.publica(topic, message);
         } catch (MqttException e) {
             e.printStackTrace();
         }

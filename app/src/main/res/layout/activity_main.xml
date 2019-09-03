@@ -22,6 +22,7 @@
         android:visibility="visible"
         tools:ignore="MissingConstraints" />
 
+
     <LinearLayout
         android:id="@+id/editRicercaLayout"
         android:layout_width="match_parent"
