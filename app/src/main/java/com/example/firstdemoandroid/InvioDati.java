@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.EditText;
 
@@ -33,11 +34,12 @@ public class InvioDati extends AsyncTask<String,Void,String> {
     private Graph<Nodo, DefaultEdge> grafo;
     private ArrayList<Nodo> nodi;
     private ArrayList<Edge<Nodo,String>> archi;
+    private float density;
 
 
-
-    public InvioDati(Context context){
+    public InvioDati(Context context, float density){
         this.context = context;
+        this.density = density;
         this.grafo = new DefaultDirectedGraph<>(DefaultEdge.class);
         nodi = new ArrayList<>();
         archi = new ArrayList<>();
@@ -70,29 +72,18 @@ public class InvioDati extends AsyncTask<String,Void,String> {
             for(int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
 
-                 /*
-                TELEFONO DI ORLANDO
-*/
-                int x1 = (int)(Integer.parseInt(object.get("X1").toString()) * 2.8);
-                int y1 = (int)(Integer.parseInt(object.get("Y1").toString()) * 2.8);
-                int x2 = (int)(Integer.parseInt(object.get("X2").toString()) * 2.8);
-                int y2 = (int)(Integer.parseInt(object.get("Y2").toString()) * 2.8);
+                int x1 = (int)((Integer.parseInt(object.get("X1").toString()) - 8 )* density);
+                int y1 = (int)((Integer.parseInt(object.get("Y1").toString())-64)* density);
+                int x2 = (int)((Integer.parseInt(object.get("X2").toString()) - 8 ) * density);
+                int y2 = (int)((Integer.parseInt(object.get("Y2").toString())-64) * density);
 
-/*
-                int x1 = (int)(Integer.parseInt(object.get("X1").toString()) * 3.5);
-                int y1 = (int)(Integer.parseInt(object.get("Y1").toString()) * 3.5);
-                int x2 = (int)(Integer.parseInt(object.get("X2").toString()) * 3.5);
-                int y2 = (int)(Integer.parseInt(object.get("Y2").toString()) * 3.5);
-*/
                 Nodo n1 = new Nodo(x1, y1);
                 Nodo n2 = new Nodo(x2, y2);
 
 
-                Edge<Nodo,String> e1, e2;
+                Edge<Nodo,String> e1;
                 e1 = new Edge<>(n1,n2);
-               // e2 = new Edge<>(n2,n1);
                 archi.add(e1);
-                //archi.add(e2);
                 if(!nodi.contains(n1)) {
                     nodi.add(n1);
                 }

@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -62,7 +63,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     private BeaconHelper beaconHelper;
-    private static final String ip = "172.19.18.219";
+    private static final String ip = "151.236.56.24";
     private Graph<Nodo,DefaultEdge> grafo;
     private Button cercaPercorsoButton;
     private Button stopReadingBeaconsButton;
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     private Nodo destinazione;
     private EditText editX;
     private EditText editY;
+    private DisplayMetrics metrics;
+    private float density;
 
 
 
@@ -94,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         Nodo n2 = new Nodo(20,20);
 
         ArrayList<Nodo> nodi = new ArrayList<>();
-
+        metrics = getResources().getDisplayMetrics();
+        density = metrics.density;
         editX = findViewById(R.id.inputX);
         editY = findViewById(R.id.inputY);
         hiddenTextView = (TextView) findViewById(R.id.hiddenTextView);
@@ -121,9 +125,9 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         ambp = (BitmapDrawable) imageView.getDrawable();
         bitmap = Bitmap.createBitmap(1000,1000, Bitmap.Config.RGB_565);
         bitmap = ambp.getBitmap();
-        invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
+        invio = (InvioDati) new InvioDati(this, density).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/interfaccia_capitano/php/caricaGrafo.php?piano=1");
         grafo = invio.getGrafo();
-        caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaHashmap.php?piano=1");
+        caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this, density).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/interfaccia_capitano/php/caricaHashmap.php?piano=1");
 
 
 
@@ -207,7 +211,8 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void drawGraph(Graph<Nodo,DefaultEdge> graph){
 
-        operations = Bitmap.createBitmap( (int)(bitmap.getWidth() * 2.6), (int)(bitmap.getHeight() *2.8), Bitmap.Config.ARGB_8888);
+
+        operations = Bitmap.createBitmap( (int)(bitmap.getWidth() * density), (int)(bitmap.getHeight() *density), Bitmap.Config.ARGB_8888);
         canvas = new Canvas(operations);
         canvas.drawBitmap(bitmap,0,0,null);
 
@@ -229,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
 
     public void drawMinPath(ArrayList<Nodo> toDraw){
 
-        operations = Bitmap.createBitmap( (int)(bitmap.getWidth() * 2.6), (int)(bitmap.getHeight() *2.8), Bitmap.Config.ARGB_8888);
+        operations = Bitmap.createBitmap( (int)(bitmap.getWidth() * density), (int)(bitmap.getHeight() *density), Bitmap.Config.ARGB_8888);
 
         canvas = new Canvas(operations);
         canvas.drawBitmap(bitmap,0,0,null);
@@ -253,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         grafo = invio.getGrafo();
         ArrayList<Nodo> allVertex = invio.getAllNodes();
         if(allVertex.size() != 0) {
-            s = s.substring(s.length()-3);
+            s = s.substring(s.length()-5);
             System.out.println(s);
             DijkstraShortestPath<Nodo, DefaultEdge> dijkstraAlg = new DijkstraShortestPath<>(grafo);
             HashMap<String,Nodo> hashMap = caricaHashmap.getHashMap();
@@ -322,8 +327,8 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
 
             imageView.setImageResource(R.drawable.pontedicoperta);
             mAttacher.update();
-            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=1");
-            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaHashmap.php?piano=1");
+            invio = (InvioDati) new InvioDati(this, density).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/interfaccia_capitano/php/caricaGrafo.php?piano=1");
+            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this, density).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/interfaccia_capitano/php/caricaHashmap.php?piano=1");
             beaconHelper.stopDetectingBeacons();
 
             bottoniPiano[0].setEnabled(false);
@@ -333,8 +338,8 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         if(bottoneCliccato.getText().equals("Piano 2")){
             imageView.setImageResource(R.drawable.primopontedisovrastruttura);;
             mAttacher.update();
-            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=2");
-            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaHashmap.php?piano=2");
+            invio = (InvioDati) new InvioDati(this, density).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/interfaccia_capitano/php/caricaGrafo.php?piano=2");
+            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this, density).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/interfaccia_capitano/php/caricaHashmap.php?piano=2");
             beaconHelper.stopDetectingBeacons();
 
             bottoniPiano[0].setEnabled(true);
@@ -344,8 +349,8 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         if(bottoneCliccato.getText().equals("Piano 3")) {
             imageView.setImageResource(R.drawable.pontedicomando);;
             mAttacher.update();
-            invio = (InvioDati) new InvioDati(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "http://"+ip+"/DemoWebBeacon/caricaGrafo.php?piano=3");
-            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/DemoWebBeacon/caricaHashmap.php?piano=3");
+            invio = (InvioDati) new InvioDati(this, density).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "http://"+ip+"/interfaccia_capitano/php/caricaGrafo.php?piano=3");
+            caricaHashmap = (CaricaHashmapBeacon) new CaricaHashmapBeacon(this, density).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"http://"+ip+"/interfaccia_capitano/php/caricaHashmap.php?piano=3");
             beaconHelper.stopDetectingBeacons();
 
 

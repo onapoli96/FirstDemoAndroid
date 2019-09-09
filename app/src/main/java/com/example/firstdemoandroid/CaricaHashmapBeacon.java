@@ -24,10 +24,11 @@ import java.util.HashMap;
 public class CaricaHashmapBeacon extends AsyncTask<String,Void,String> {
     private Context context;
     private HashMap<String,Nodo> beaconNodo;
+    private float density;
 
-
-    public CaricaHashmapBeacon(Context context){
+    public CaricaHashmapBeacon(Context context, float density){
         this.context = context;
+        this.density = density;
         beaconNodo = new HashMap<>();
     }
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -58,14 +59,11 @@ public class CaricaHashmapBeacon extends AsyncTask<String,Void,String> {
             for(int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
 
-                //int x = (int)(Integer.parseInt(object.get("X").toString()) * 3.5);
-                //int y = (int)(Integer.parseInt(object.get("Y").toString()) * 3.5);
-
-                int x = (int)(Integer.parseInt(object.get("X").toString()) * 2.8);
-                int y = (int)(Integer.parseInt(object.get("Y").toString()) * 2.8);
+                int x = (int)((Integer.parseInt(object.get("X").toString()) - 8 )* density);
+                int y = (int)((Integer.parseInt(object.get("Y").toString())-64)* density);
 
                 String idBeacon = object.get("IDBeacon").toString();
-                System.out.println(idBeacon);
+                System.out.println("sono qui"+ x+" "+ y + " "+ idBeacon);
                 Nodo n = new Nodo(x, y);
 
                 beaconNodo.put(idBeacon, n);
